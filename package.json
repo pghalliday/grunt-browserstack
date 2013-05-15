@@ -1,7 +1,7 @@
 {
   "name": "grunt-browserstack",
   "description": "BrowserStack tasks for grunt",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "homepage": "https://github.com/pghalliday/grunt-browserstack",
   "author": {
     "name": "Peter Halliday",
@@ -38,7 +38,7 @@
     "browserstacktunnel"
   ],
   "dependencies": {
-    "browserstacktunnel-wrapper": "~1.0.0",
+    "browserstacktunnel-wrapper": "~1.0.1",
     "simplified-browserstack": "0.0.1"
   }
 }
