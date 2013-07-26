@@ -4,6 +4,7 @@ var expect = require('chai').expect;
 var exec = require('child_process').exec;
 var fs = require('fs');
 var net = require('net');
+var path = require('path');
 
 var mergeCoverageData = function(data) {
   // we have to reconstruct the the _$jscoverage data
@@ -36,7 +37,7 @@ var execScenario = function(scenario, task, callback) {
     callback = task;
     task = ''
   }
-  var scenarioDir = __dirname + '/../scenarios/' + scenario;
+  var scenarioDir = path.join(__dirname, '../scenarios', scenario);
   var child = exec('node ../grunt.js ' + task, {cwd: scenarioDir}, function(error, stdout, stderr) {
     // collect coverage data from file if it exists
     // this is because the coverage tool does not
@@ -51,6 +52,15 @@ var execScenario = function(scenario, task, callback) {
 };
 
 describe('grunt-browserstack', function() {
+  before(function() {
+    // If the environment is set then overwrite the browserStackCredentials.json
+    if (process.env.BROWSERSTACK_API_KEY) {
+      fs.writeFileSync(path.join(__dirname, '../scenarios', browserStackCredentials.json), JSON.stringify({
+        apiKey: process.env.BROWSERSTACK_API_KEY
+      }), 'w+');
+    }
+  });
+
   describe('browserStackTunnel', function() {
     it('should fail if an unknown action is specified', function(done) {
       execScenario('unknownActionTunnel', function(error, stdout, stderr) {

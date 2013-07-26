@@ -173,7 +173,6 @@ module.exports = function(grunt) {
       watcher = tail(tunnelLogFile,function(line,tailInfo){
         grunt.log.writeln(line);
         if (line === 'Press Ctrl-C to exit') {
-          watcher.close();
           end();
         }
       });

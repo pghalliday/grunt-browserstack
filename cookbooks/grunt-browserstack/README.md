@@ -7,6 +7,7 @@ Chef cookbook to set up a grunt-browserstack development environment
 
 - nodejs
 - java
+- rubygems
 
 ## Attributes
 
@@ -14,7 +15,7 @@ Chef cookbook to set up a grunt-browserstack development environment
 
 ### default
 
-Installs Node.js, Java, runs npm install and npm test
+Installs Node.js, Java, Ruby, the travis gem (for generating encrypted data so keys and credentioals can be sent to travis), runs npm install and npm test
 
 ## License
 Copyright &copy; 2013 Peter Halliday  
