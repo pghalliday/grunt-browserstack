@@ -57,7 +57,9 @@ describe('grunt-browserstack', function() {
     if (process.env.BROWSERSTACK_API_KEY) {
       fs.writeFileSync(path.join(__dirname, '../scenarios', 'browserStackCredentials.json'), JSON.stringify({
         apiKey: process.env.BROWSERSTACK_API_KEY
-      }), 'w+');
+      }), {
+        flag: 'w+'
+      });
     }
   });
 
