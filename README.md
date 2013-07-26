@@ -100,6 +100,125 @@ browserstack_clean: {
 } 
 ```
 
+## Roadmap
+
+Major refactor is probably due
+
+- tunnel tasks
+  - `browserstackTunnelInit`
+    - start browserstack tunnel
+  - `browserstackTunnelUninit`
+    - stop browserstack tunnel   
+- test tasks
+  - `browserstackTestInit`
+    - start karma
+    - start workers
+  - `browserstackTest`
+    - run tests
+  - `browserstackTestUninit`
+    - stop workers
+    - stop karma
+- screenshot tasks
+  - `browserstackScreenshot`
+    - start response listener
+    - submit screen shot requests
+    - listen for responses
+    - download and store images with timestamps, etc
+    - stop listener
+
+### Usage patterns
+
+In the below examples it is assumed that the following other tasks will be used to intialise the state of a local server to prepare for the screenshots and then cleanup afterward
+
+- `serverInit`
+- `serverUninit`
+
+These will obviously be application specific and are not provided by the `grunt-browserstack` plugin
+
+Also the examples use the `grunt-continue` plugin to ensure that cleanup is performed after failing tests, etc without having to use the `--force` option at the command line
+
+```
+$ npm install grunt-continue
+```
+
+```javascript
+// Load the continueOn and continueOff tasks
+grunt.loadNpmTasks('grunt-continue');
+```
+
+#### Development
+
+In development you would likely want to start all the services first and then run tests or take screen shots repeatedly
+
+```javascript
+grunt.registerTask('start', [
+  'browserstackTunnelInit',
+  'browserstackTestInit'
+]);
+
+grunt.registerTask('default', ['browserstackTest']);
+
+// For the screenshots you may want to start and stop the application each time
+// to ensure it is serving the latest version of everything
+grunt.registerTask('screenshot', [
+  'serverInit',
+  'browserstackScreenshot',
+  'serverUninit'
+]);
+
+grunt.registerTask('stop', [
+  'browserstackTestUninit',
+  'browserstackTunnelUninit'
+]);
+```
+
+```
+# Start the tunnnel and workers and leave then running while tests
+# are run and screen shots taken repeatedly
+$ grunt start
+
+...
+
+# Run tests
+$ grunt
+
+# Take screen shots
+$ grunt screenshot
+
+...
+
+# Stop the tunnel and workers when they are not going to be needed again for a while
+$ grunt stop
+```
+
+#### Integration server
+
+On an integration server you would likely want to start all the services run the tests, take screen shots and then clean up all in one go
+
+```javascript
+grunt.registerTask('integration', [
+  'browserstackTunnelInit',
+  'browserstackTestInit',
+  // Stop grunt aborting if the tests fail
+  // so that cleanup still happens
+  'continueOn',
+  'browserstackTest',
+  // grunt can abort again now
+  'continueOff',
+  'browserstackTestUninit',
+  'serverInit',
+  'browserstackScreenshot',
+  'serverUninit',
+  'browserstackTunnelUninit'
+]);
+```
+
+To run the task
+
+```
+$ grunt integration
+```
+
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [grunt][grunt].
 
