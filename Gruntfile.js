@@ -14,7 +14,7 @@ module.exports = function(grunt) {
     },
     copy: {
       test: {
-        src: ['test/**'],
+        src: ['test/**', 'bin/**'],
         dest: 'lib-cov/'
       }
     },

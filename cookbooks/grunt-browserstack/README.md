@@ -6,6 +6,7 @@ Chef cookbook to set up a grunt-browserstack development environment
 ## Depends
 
 - nodejs
+- java
 
 ## Attributes
 
@@ -13,7 +14,7 @@ Chef cookbook to set up a grunt-browserstack development environment
 
 ### default
 
-Installs Node.js, runs npm install and npm test
+Installs Node.js, Java, runs npm install and npm test
 
 ## License
 Copyright &copy; 2013 Peter Halliday  

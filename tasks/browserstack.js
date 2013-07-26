@@ -8,6 +8,16 @@
 
 var BrowserStack = require('simplified-browserstack');
 var BrowserStackTunnel = require('browserstacktunnel-wrapper');
+var spawn = require('child_process').spawn;
+var fs = require('fs-extra');
+var tail = require('tailfd').tail;
+var path = require('path');
+
+var DEFAULT_TUNNEL_START_TIMEOUT = 30000;
+var tempDir = '.grunt-browserstack';
+var tunnelTempDir = path.join(tempDir, 'tunnel');
+var tunnelLogFile = path.join(tunnelTempDir, 'out.log');
+var tunnelPidFile = path.join(tunnelTempDir, 'pid');
 
 module.exports = function(grunt) {
   function startBrowsers(credentials, start, callback) {
@@ -104,5 +114,84 @@ module.exports = function(grunt) {
         done();
       }
     });
+  });
+
+  grunt.registerTask('browserstackTunnel', 'start and stop the BrowserStack tunnel', function(action) {
+    if (action === 'start') {
+      grunt.config.requires('browserstackTunnel.apiKey', 'browserstackTunnel.hosts');
+      var options = [
+        '-jar',
+        path.join(__dirname, '../bin/BrowserStackTunnel.jar'),
+        grunt.config('browserstackTunnel.apiKey')
+      ];
+      hosts = grunt.config('browserstackTunnel.hosts');
+      if (hosts instanceof Array) {
+        hosts.forEach(function(host) {
+          if (typeof host.name === 'string') {
+            if (typeof host.port === 'number' || typeof host.port === 'string') {
+              if (typeof host.sslFlag === 'number' || typeof host.sslFlag === 'string') {
+                options.push(host.name + ',' + host.port + ',' + host.sslFlag);
+              } else {
+                grunt.fail.warn(new Error('host entry must have an sslFlag.'));
+              }
+            } else {
+              grunt.fail.warn(new Error('host entry must have a port.'));
+            }
+          } else {
+            grunt.fail.warn(new Error('host entry must have a name.'));
+          }
+        });
+      } else {
+        grunt.fail.warn(new Error('hosts parameter must be an array.'));
+      }
+      var done = this.async();
+      var timeout, child, watcher, out, err;
+      var cleanUp = function() {
+        fs.closeSync(out);
+        fs.closeSync(err);
+        watcher.close();
+        clearTimeout(timeout);        
+        child.removeListener('exit', exitHandler);
+      };
+      var exitHandler = function() {
+        cleanUp();
+        grunt.fail.warn(new Error('Exited.'));
+      };
+      var timeoutHandler = function() {
+        cleanUp();
+        child.kill();
+        grunt.fail.warn(new Error('Timed out.'));
+      };
+      var end = function() {
+        cleanUp();
+        done();
+      };
+      fs.createFileSync(tunnelLogFile);
+      fs.createFileSync(tunnelPidFile);
+      out = fs.openSync(tunnelLogFile, 'a');
+      err = fs.openSync(tunnelLogFile, 'a');
+      watcher = tail(tunnelLogFile,function(line,tailInfo){
+        grunt.log.writeln(line);
+        if (line === 'Press Ctrl-C to exit') {
+          watcher.close();
+          end();
+        }
+      });
+      child = spawn('java', options, {
+        detached: true,
+        stdio: ['ignore', out, err]
+      });
+      fs.writeFileSync(tunnelPidFile, child.pid, {
+        flag: 'w+'
+      });
+      child.on('exit', exitHandler);
+      child.unref();
+      timeout = setTimeout(timeoutHandler, grunt.config('browserstackTunnel.timeout') || DEFAULT_TUNNEL_START_TIMEOUT);
+    } else if (action === 'stop') {
+      pid = parseInt(fs.readFileSync(tunnelPidFile));
+      process.kill(pid);
+    } else {
+      grunt.fail.warn(new Error('Unknown action.'));
+    }
   });
 };

@@ -1,4 +1,5 @@
 include_recipe "nodejs"
+include_recipe "java"
 
 bash "install and test" do
   code <<-EOH

@@ -13,5 +13,5 @@ lib-cov
 coverage.html
 
 # test stuff
-test/scenarios/destinationFile/output
-test/scenarios/quietOption/output
+test/scenarios/browserStackCredentials.json
+.grunt-browserstack
