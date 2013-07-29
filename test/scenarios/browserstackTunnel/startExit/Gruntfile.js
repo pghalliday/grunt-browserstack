@@ -1,8 +1,8 @@
 module.exports = function(grunt) {
   // Add our custom tasks.
-  grunt.loadTasks('../../../tasks');
+  grunt.loadTasks('../../../../tasks');
 
-  browserStackCredentials = grunt.file.readJSON('../browserStackCredentials.json')
+  browserStackCredentials = grunt.file.readJSON('../../browserStackCredentials.json')
 
   grunt.initConfig({
     browserstackTunnel: {
@@ -17,9 +17,5 @@ module.exports = function(grunt) {
 
   grunt.registerTask('default', [
     'browserstackTunnel:start'
-  ]);
-
-  grunt.registerTask('stop', [
-    'browserstackTunnel:stop'
   ]);
 };

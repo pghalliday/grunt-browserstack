@@ -28,14 +28,15 @@
   "scripts": {
     "test": "grunt",
     "travis-cov": {
-      "threshold": 69
+      "threshold": 100
     }
   },
   "dependencies": {
     "browserstacktunnel-wrapper": "~1.0.1",
     "simplified-browserstack": "~0.0.1",
-    "tailfd": "~0.1.4",
-    "fs-extra": "~0.6.3"
+    "tailfd": "~0.1.5",
+    "fs-extra": "~0.6.3",
+    "express": "~3.3.4"
   },
   "devDependencies": {
     "grunt-cli": "~0.1.8",
