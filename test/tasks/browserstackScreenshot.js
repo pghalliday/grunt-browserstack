@@ -11,7 +11,6 @@ describe('browserstackScreenshot', function() {
 
   it('should collect screenshots for local files', function(done) {
     execScenario('browserstackScreenshot/localFiles', function(error, stdout, stderr) {
-      console.log(stdout);
       expect(stdout).to.match(/Done, without errors./);
       done();
     });

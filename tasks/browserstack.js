@@ -5,19 +5,18 @@
  * Copyright (c) 2012 Peter Halliday
  * Licensed under the MIT license.
  */
-
-var spawn = require('child_process').spawn;
-var fs = require('fs-extra');
-var tail = require('tailfd').tail;
 var path = require('path');
-var express = require('express');
-var http = require('http');
+var LooseDaemon = require('./LooseDaemon');
+
+var tempDir = '.grunt-browserstack';
 
 var DEFAULT_TUNNEL_START_TIMEOUT = 30000;
-var tempDir = '.grunt-browserstack';
 var tunnelTempDir = path.join(tempDir, 'tunnel');
-var tunnelLogFile = path.join(tunnelTempDir, 'out.log');
-var tunnelPidFile = path.join(tunnelTempDir, 'pid');
+var tunnelDaemon = new LooseDaemon(tunnelTempDir);
+
+var DEFAULT_SCREENSHOT_SERVER_START_TIMEOUT = 30000;
+var screenshotServerTempDir = path.join(tempDir, 'screenshot-server');
+var screenshotServerDaemon = new LooseDaemon(screenshotServerTempDir);
 
 var expressServer, httpServer;
 
@@ -51,50 +50,27 @@ module.exports = function(grunt) {
         grunt.fail.warn(new Error('hosts parameter must be an array.'));
       }
       var done = this.async();
-      var timeout, child, watcher, out, err;
-      var cleanUp = function() {
-        watcher.close();
-        fs.closeSync(out);
-        fs.closeSync(err);
-        clearTimeout(timeout);        
-        child.removeListener('exit', exitHandler);
-      };
-      var exitHandler = function() {
-        cleanUp();
-        grunt.fail.warn(new Error('Exited.'));
-      };
-      var timeoutHandler = function() {
-        cleanUp();
-        child.kill();
-        grunt.fail.warn(new Error('Timed out.'));
-      };
-      var end = function() {
-        cleanUp();
-        done();
-      };
-      fs.createFileSync(tunnelLogFile);
-      fs.createFileSync(tunnelPidFile);
-      out = fs.openSync(tunnelLogFile, 'a');
-      err = fs.openSync(tunnelLogFile, 'a');
-      watcher = tail(tunnelLogFile,function(line,tailInfo){
-        grunt.log.writeln(line);
-        if (line === 'Press Ctrl-C to exit') {
-          end();
+      tunnelDaemon.start({
+        cmd: 'java',
+        args: options,
+        regexp: /Press Ctrl-C to exit/,
+        timeout: grunt.config('browserstackTunnel.timeout') || DEFAULT_TUNNEL_START_TIMEOUT
+      }, function(error) {
+        if (error) {
+          grunt.fail.warn(error);
+        } else {
+          done();
         }
       });
-      child = spawn('java', options, {
-        detached: true,
-        stdio: ['ignore', out, err]
-      });
-      fs.writeFileSync(tunnelPidFile, child.pid, {
-        flag: 'w+'
-      });
-      child.on('exit', exitHandler);
-      child.unref();
-      timeout = setTimeout(timeoutHandler, grunt.config('browserstackTunnel.timeout') || DEFAULT_TUNNEL_START_TIMEOUT);
     } else if (action === 'stop') {
-      pid = parseInt(fs.readFileSync(tunnelPidFile));
-      process.kill(pid);
+      var done = this.async();
+      tunnelDaemon.stop(function(error) {
+        if (error) {
+          grunt.fail.warn(error);
+        } else {
+          done();
+        }
+      });
     } else {
       grunt.fail.warn(new Error('Unknown action.'));
     }
@@ -103,18 +79,37 @@ module.exports = function(grunt) {
   grunt.registerTask('browserstackScreenshotServer', 'start and stop the BrowserStack screenshot server', function(action) {
     if (action == 'start') {
       grunt.config.requires('browserstackScreenshotServer.port');
-      done = this.async();
-      expressServer = express();
-      httpServer = http.createServer(expressServer);
-      httpServer.listen(grunt.config('browserstackScreenshotServer.port'), done);
+      var done = this.async();
+      var port = grunt.config('browserstackScreenshotServer.port');
+      screenshotServerDaemon.start({
+        cmd: 'node',
+        args: [
+          path.join(__dirname, 'ScreenshotServer'),
+          port
+        ],
+        regexp: new RegExp('BrowserStack screenshot server listening on port ' + port),
+        timeout: grunt.config('browserstackScreenshotServer.timeout') || DEFAULT_SCREENSHOT_SERVER_START_TIMEOUT
+      }, function(error) {
+        if (error) {
+          grunt.fail.warn(error);
+        } else {
+          done();
+        }
+      });
     } else if (action == 'stop') {
-      done = this.async();
-      httpServer.close(done);
+      var done = this.async();
+      screenshotServerDaemon.stop(function(error) {
+        if (error) {
+          grunt.fail.warn(error);
+        } else {
+          done();
+        }
+      });
     } else {
       grunt.fail.warn(new Error('Unknown action.'));
     }
   });
 
-  grunt.registerTask('browserstackScreenshot', 'Schedule and collect screenshots from the BrowserStackweb service', function(action) {
+  grunt.registerTask('browserstackScreenshot', 'Schedule and collect screenshots from the BrowserStack web service', function(action) {
   });
 };

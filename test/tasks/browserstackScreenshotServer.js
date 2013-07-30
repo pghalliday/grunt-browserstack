@@ -24,4 +24,15 @@ describe('browserstackScreenshotServer', function() {
       done();
     });
   }); 
+
+  it('should start and stop the BrowserStack screenshot server from different processes', function(done) {
+    execScenario('browserstackScreenshotServer/start', function(error, stdout, stderr) {
+      expect(stdout).to.match(/BrowserStack screenshot server listening on port 8000/);
+      expect(stdout).to.match(/Done, without errors./);
+      execScenario('browserstackScreenshotServer/start', 'stop', function(error, stdout, stderr) {
+        expect(stdout).to.match(/Done, without errors./);
+        done();
+      });
+    });
+  });
 });
