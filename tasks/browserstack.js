@@ -23,11 +23,11 @@ var expressServer, httpServer;
 module.exports = function(grunt) {
   grunt.registerTask('browserstackTunnel', 'start and stop the BrowserStack tunnel', function(action) {
     if (action === 'start') {
-      grunt.config.requires('browserstackTunnel.apiKey', 'browserstackTunnel.hosts');
+      grunt.config.requires('browserstackTunnel.apikey', 'browserstackTunnel.hosts');
       var options = [
         '-jar',
         path.join(__dirname, '../bin/BrowserStackTunnel.jar'),
-        grunt.config('browserstackTunnel.apiKey')
+        grunt.config('browserstackTunnel.apikey')
       ];
       hosts = grunt.config('browserstackTunnel.hosts');
       if (hosts instanceof Array) {
@@ -78,10 +78,10 @@ module.exports = function(grunt) {
 
   grunt.registerTask('browserstackScreenshotServer', 'start and stop the BrowserStack screenshot server', function(action) {
     if (action == 'start') {
-      grunt.config.requires('browserstackScreenshotServer.port','browserstackScreenshotServer.apiKey');
+      grunt.config.requires('browserstackScreenshotServer.port','browserstackScreenshotServer.apikey');
       var done = this.async();
       var port = grunt.config('browserstackScreenshotServer.port');
-      var apiKey = grunt.config('browserstackScreenshotServer.apiKey');
+      var apiKey = grunt.config('browserstackScreenshotServer.apikey');
       screenshotServerDaemon.start({
         cmd: 'node',
         args: [

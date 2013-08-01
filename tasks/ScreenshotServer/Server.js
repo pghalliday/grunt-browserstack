@@ -6,13 +6,14 @@ var Q = require('q');
 var glob = require('glob');
 var fs = require('fs-extra');
 var path = require('path');
+var url = require('url');
 
 function ScreenshotServer(params) {
   var self = this;
   var app = express()
   var server = http.createServer(app);
   var requests = {};
-  var browserstackUrl = 'http://:' + params.apiKey + '@www.browserstack.com/screenshots';
+  var browserstackUrl = 'http://' + params.username + ':' + params.apikey + '@www.browserstack.com/screenshots';
 
   app.use(express.bodyParser());
 
@@ -21,7 +22,6 @@ function ScreenshotServer(params) {
   });
 
   app.post('/screenshots/:id', function(request, response) {
-    console.log(request.body);
     var params = requests[request.params.id];
     if (params) {
       delete requests[request.params.id];
@@ -56,10 +56,23 @@ function ScreenshotServer(params) {
             imagePath: ''
           };
           promises.push(params.deferred.promise);
-          console.log(browserstackUrl);
           superagent.post(browserstackUrl)
+          .set('Content-Type', 'application/json')
           .send({
-
+            url: url.resolve('http://localhost:' + params.port + '/local/' + result.id + '/start', file),
+            callback_url: 'http://localhost:' + params.port + '/screenshots/' + id,
+            win_res: variation.resolution,
+            mac_res: variation.resolution,
+            quality: 'compressed',
+            wait_time: 5,
+            orientation: variation.orientation,
+            browsers:[{
+              os: variation.os,
+              os_version: variation.os_version,
+              browser: variation.browser,
+              browser_version: variation.browser_version,
+              device: variation.device
+            }]
           })
           .end(function(error, response) {
             error = error || response.error;
@@ -67,7 +80,6 @@ function ScreenshotServer(params) {
               delete requests[id];
               params.deferred.reject(error);
             }
-            console.log(response.body);
           });
         });
       });

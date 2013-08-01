@@ -6,7 +6,7 @@ module.exports = function(grunt) {
 
   grunt.initConfig({
     browserstackTunnel: {
-      apiKey: browserStackCredentials.apiKey,
+      apikey: browserStackCredentials.apikey,
       hosts: [{
         port: 8000,
         sslFlag: 0

@@ -53,7 +53,8 @@ module.exports.overrideBrowserStackCredentials = function() {
   // If the environment is set then overwrite the browserStackCredentials.json
   if (process.env.BROWSERSTACK_API_KEY) {
     fs.writeFileSync(path.join(__dirname, '../scenarios', 'browserstackCredentials.json'), JSON.stringify({
-      apiKey: process.env.BROWSERSTACK_API_KEY
+      apikey: process.env.BROWSERSTACK_API_KEY,
+      username: process.env.BROWSERSTACK_USERNAME
     }), {
       flag: 'w+'
     });

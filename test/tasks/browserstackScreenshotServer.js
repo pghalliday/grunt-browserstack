@@ -25,9 +25,9 @@ describe('browserstackScreenshotServer', function() {
     });
   }); 
 
-  it('should fail if no apiKey is specified', function(done) {
+  it('should fail if no API Key is specified', function(done) {
     execScenario('browserstackScreenshotServer/startNoApiKey', function(error, stdout, stderr) {
-      expect(stdout).to.match(/Warning: Required config property "browserstackScreenshotServer.apiKey" missing\./);
+      expect(stdout).to.match(/Warning: Required config property "browserstackScreenshotServer.apikey" missing\./);
       expect(stdout).to.match(/Aborted due to warnings./);
       done();
     });

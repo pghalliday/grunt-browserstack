@@ -7,7 +7,7 @@ module.exports = function(grunt) {
   grunt.initConfig({
     browserstackScreenshotServer: {
       port: 8000,
-      apiKey: browserStackCredentials.apiKey
+      apikey: browserStackCredentials.apikey
     }
   });
 

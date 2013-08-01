@@ -6,7 +6,7 @@ module.exports = function(grunt) {
 
   grunt.initConfig({
     browserstackScreenshotServer: {
-      apiKey: browserStackCredentials.apiKey
+      apikey: browserStackCredentials.apikey
     }
   });
 

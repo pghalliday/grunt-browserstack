@@ -40,7 +40,8 @@
     "node-uuid": "~1.4.0",
     "superagent": "~0.15.4",
     "q": "~0.9.6",
-    "glob": "~3.2.6"
+    "glob": "~3.2.6",
+    "request": "~2.25.0"
   },
   "devDependencies": {
     "grunt-cli": "~0.1.8",

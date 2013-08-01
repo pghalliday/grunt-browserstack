@@ -19,7 +19,7 @@ describe('browserstackTunnel', function() {
 
   it('should fail to start if the API key is not specified', function(done) {
     execScenario('browserstackTunnel/startNoApiKey', function(error, stdout, stderr) {
-      expect(stdout).to.match(/Warning: Required config property "browserstackTunnel.apiKey" missing\./);
+      expect(stdout).to.match(/Warning: Required config property "browserstackTunnel.apikey" missing\./);
       expect(stdout).to.match(/Aborted due to warnings./);
       done();
     });

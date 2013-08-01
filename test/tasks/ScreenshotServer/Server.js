@@ -17,7 +17,8 @@ describe.skip('tasks/ScreenshotServer/Server', function() {
     var browserstackCredentials = require('../../scenarios/browserstackCredentials');
     server = new Server({
       port: 8000,
-      apiKey: browserstackCredentials.apiKey
+      apikey: browserstackCredentials.apikey,
+      username: browserstackCredentials.username
     });
   });
 
