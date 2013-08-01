@@ -5,7 +5,7 @@ chai.should();
 
 var execScenario = require('../../utils').execScenario;
 
-describe('LooseDaemon', function() {
+describe('tasks/LooseDaemon', function() {
   it('should error if no cmd is specified', function(done) {
     execScenario('LooseDaemon/noCmd', function(error, stdout, stderr) {
       expect(stdout).to.match(/cmd must be specified\./);

@@ -28,7 +28,7 @@
   "scripts": {
     "test": "grunt",
     "travis-cov": {
-      "threshold": 98
+      "threshold": 80
     }
   },
   "dependencies": {
@@ -36,7 +36,11 @@
     "simplified-browserstack": "~0.0.1",
     "tailfd": "~0.1.5",
     "fs-extra": "~0.6.3",
-    "express": "~3.3.4"
+    "express": "~3.3.4",
+    "node-uuid": "~1.4.0",
+    "superagent": "~0.15.4",
+    "q": "~0.9.6",
+    "glob": "~3.2.6"
   },
   "devDependencies": {
     "grunt-cli": "~0.1.8",

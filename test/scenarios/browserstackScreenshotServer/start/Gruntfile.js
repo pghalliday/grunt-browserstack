@@ -2,9 +2,12 @@ module.exports = function(grunt) {
   // Add our custom tasks.
   grunt.loadTasks('../../../../tasks');
 
+  browserStackCredentials = grunt.file.readJSON('../../browserstackCredentials.json')
+
   grunt.initConfig({
     browserstackScreenshotServer: {
-      port: 8000
+      port: 8000,
+      apiKey: browserStackCredentials.apiKey
     }
   });
 

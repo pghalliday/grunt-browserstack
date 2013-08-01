@@ -78,14 +78,16 @@ module.exports = function(grunt) {
 
   grunt.registerTask('browserstackScreenshotServer', 'start and stop the BrowserStack screenshot server', function(action) {
     if (action == 'start') {
-      grunt.config.requires('browserstackScreenshotServer.port');
+      grunt.config.requires('browserstackScreenshotServer.port','browserstackScreenshotServer.apiKey');
       var done = this.async();
       var port = grunt.config('browserstackScreenshotServer.port');
+      var apiKey = grunt.config('browserstackScreenshotServer.apiKey');
       screenshotServerDaemon.start({
         cmd: 'node',
         args: [
           path.join(__dirname, 'ScreenshotServer'),
-          port
+          port,
+          apiKey
         ],
         regexp: new RegExp('BrowserStack screenshot server listening on port ' + port),
         timeout: grunt.config('browserstackScreenshotServer.timeout') || DEFAULT_SCREENSHOT_SERVER_START_TIMEOUT

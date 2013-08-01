@@ -87,7 +87,6 @@ describe('browserstackTunnel', function() {
   });
 
   it('should start and stop the BrowserStack tunnel from different processes', function(done) {
-    this.timeout(20000);
     server = net.createServer();
     server.listen(8000, function() {
       execScenario('browserstackTunnel/start', function(error, stdout, stderr) {

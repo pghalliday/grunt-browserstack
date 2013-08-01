@@ -25,6 +25,14 @@ describe('browserstackScreenshotServer', function() {
     });
   }); 
 
+  it('should fail if no apiKey is specified', function(done) {
+    execScenario('browserstackScreenshotServer/startNoApiKey', function(error, stdout, stderr) {
+      expect(stdout).to.match(/Warning: Required config property "browserstackScreenshotServer.apiKey" missing\./);
+      expect(stdout).to.match(/Aborted due to warnings./);
+      done();
+    });
+  }); 
+
   it('should start and stop the BrowserStack screenshot server from different processes', function(done) {
     execScenario('browserstackScreenshotServer/start', function(error, stdout, stderr) {
       expect(stdout).to.match(/BrowserStack screenshot server listening on port 8000/);
