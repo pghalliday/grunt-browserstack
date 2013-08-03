@@ -35,6 +35,7 @@ function ScreenshotServer(params) {
     if (deferredParams) {
       delete inProgress[request.params.id];
       var screenshot = request.body.screenshots[0];
+      console.log(screenshot);
       var thumbUrl = screenshot.thumb_url;
       var imageUrl = screenshot.image_url;
       var promises = [];
@@ -127,6 +128,7 @@ function ScreenshotServer(params) {
             deferredParams.deferred.reject(error);
           }
           console.log(variation.os);
+          console.log(error);
           console.log(response.text);
         });
       });
