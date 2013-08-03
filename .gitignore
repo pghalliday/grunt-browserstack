@@ -13,5 +13,5 @@ lib-cov
 coverage.html
 
 # test stuff
-test/scenarios/browserStackCredentials.json
+test/scenarios/browserstackCredentials.json
 .grunt-browserstack

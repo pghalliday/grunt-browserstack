@@ -24,18 +24,16 @@ module.exports = function(grunt) {
   grunt.registerTask('browserstackTunnel', 'start and stop the BrowserStack tunnel', function(action) {
     if (action === 'start') {
       grunt.config.requires('browserstackTunnel.apikey', 'browserstackTunnel.hosts');
-      var options = [
-        '-jar',
-        path.join(__dirname, '../bin/BrowserStackTunnel.jar'),
-        grunt.config('browserstackTunnel.apikey')
-      ];
       hosts = grunt.config('browserstackTunnel.hosts');
+      hostOptions = [];
       if (hosts instanceof Array) {
         hosts.forEach(function(host) {
           if (typeof host.name === 'string') {
             if (typeof host.port === 'number' || typeof host.port === 'string') {
               if (typeof host.sslFlag === 'number' || typeof host.sslFlag === 'string') {
-                options.push(host.name + ',' + host.port + ',' + host.sslFlag);
+                hostOptions.push(host.name);
+                hostOptions.push(host.port);
+                hostOptions.push(host.sslFlag);
               } else {
                 grunt.fail.warn(new Error('host entry must have an sslFlag.'));
               }
@@ -52,7 +50,12 @@ module.exports = function(grunt) {
       var done = this.async();
       tunnelDaemon.start({
         cmd: 'java',
-        args: options,
+        args: [
+          '-jar',
+          path.join(__dirname, '../bin/BrowserStackTunnel.jar'),
+          grunt.config('browserstackTunnel.apikey'),
+          hostOptions.join(',')
+        ],
         regexp: /Press Ctrl-C to exit/,
         timeout: grunt.config('browserstackTunnel.timeout') || DEFAULT_TUNNEL_START_TIMEOUT
       }, function(error) {
