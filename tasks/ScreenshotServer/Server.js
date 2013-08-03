@@ -108,6 +108,7 @@ function ScreenshotServer(params) {
           win_res: (variation.os === 'Windows' ? variation.resolution : undefined),
           mac_res: (variation.os === 'OS X' ? variation.resolution : undefined),
           quality: 'compressed',
+          tunnel: true,
           wait_time: variation.wait_time,
           orientation: variation.orientation,
           browsers:[{
