@@ -1,3 +1,4 @@
+var JSONStream = require('json-stream');
 var supertest = require('supertest');
 var fs = require('fs-extra');
 var path = require('path');
@@ -69,6 +70,7 @@ describe.skip('tasks/ScreenshotServer/Server', function() {
 
     describe('with static files', function() {
       it('should submit the screenshot request to browserstack and download the generated screenshots', function(done) {
+        this.timeout(0);
         var outputDir = path.join(__dirname, '../../scenarios/ScreenshotServer/screenshots');
         fs.removeSync(outputDir)
         request.post('/requests')
@@ -103,12 +105,29 @@ describe.skip('tasks/ScreenshotServer/Server', function() {
           }],
           outputDir: outputDir
         })
-        .expect(200)
+        .expect(201)
+        .expect('Content-Type', /application\/x-json-stream/)
+        .parse(function (response, fn) {
+          response.text = '';
+          var data = [];
+          var stream = new JSONStream();
+          response.pipe(stream);
+          stream.on('data', function(chunk) {
+            console.dir(chunk);
+            data.push(chunk);
+          });
+          response.on('data', function(chunk) {
+            response.text += chunk;
+          });
+          response.on('end', function() {
+            fn(null, data);
+          });
+        })
         .end(function(error, response) {
           expect(error).to.not.be.ok;
           fs.existsSync(outputDir).should.be.true;
-          var result = response.body;
-          outputSubdir = path.join(outputDir, result.id);
+          var transactionId = response.body[0].transactionId;
+          outputSubdir = path.join(outputDir, transactionId);
           fs.existsSync(outputSubdir).should.be.true;
           var ieOutputDirectory = path.join(outputSubdir, 'Windows/XP/ie/7.0/1024x768/5/statics/static');
           fs.existsSync(path.join(ieOutputDirectory, 'test1.html.png')).should.be.true;
@@ -138,6 +157,7 @@ describe.skip('tasks/ScreenshotServer/Server', function() {
 
     describe('with urls', function() {
       it('should submit the screenshot request to browserstack and download the generated screenshots', function(done) {
+        this.timeout(0);
         var outputDir = path.join(__dirname, '../../scenarios/ScreenshotServer/screenshots');
         fs.removeSync(outputDir)
         request.post('/requests')
@@ -172,12 +192,30 @@ describe.skip('tasks/ScreenshotServer/Server', function() {
           }],
           outputDir: outputDir
         })
-        .expect(200)
+        .expect(201)
+        .expect('Content-Type', /application\/x-json-stream/)
+        .parse(function (response, fn) {
+          response.text = '';
+          var data = [];
+          var stream = new JSONStream();
+          response.pipe(stream);
+          stream.on('data', function(chunk) {
+            console.dir(chunk);
+            data.push(chunk);
+          });
+          response.on('data', function(chunk) {
+            response.text += chunk;
+          });
+          response.on('end', function() {
+            fn(null, data);
+          });
+        })
         .end(function(error, response) {
           expect(error).to.not.be.ok;
           fs.existsSync(outputDir).should.be.true;
-          var result = response.body;
-          outputSubdir = path.join(outputDir, result.id);
+          var stream = new JSONStream();
+          var transactionId = response.body[0].transactionId;
+          outputSubdir = path.join(outputDir, transactionId);
           fs.existsSync(outputSubdir).should.be.true;
           var ieOutputDirectory = path.join(outputSubdir, 'Windows/XP/ie/7.0/1024x768/5/urls');
           fs.existsSync(path.join(ieOutputDirectory, 'google.png')).should.be.true;
