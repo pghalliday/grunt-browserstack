@@ -1,0 +1,1 @@
+curl -u "$1:$2" -H "Content-Type: application/json" -H "Accept: application/json"  -d '{"browsers": [{"os": "Windows", "os_version": "7", "browser_version": "8.0", "browser": "ie"}], "url": "http://localhost:8000", "callback_url": "http://localhost:8000/callback", "tunnel": "true"}' http://www.browserstack.com/screenshots

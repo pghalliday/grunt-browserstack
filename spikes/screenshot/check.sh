@@ -1,0 +1,1 @@
+curl -u "$1:$2" http://www.browserstack.com/screenshots/$3
